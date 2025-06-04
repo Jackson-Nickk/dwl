@@ -1,9 +1,9 @@
 Applied Patches:
 
-* Swallow
-* Simple Scratchpad
-* Pertag
-* Gaps
-* Center-Terminal
-* Tagshift
-* en-keycodes
+. Swallow
+. Simple Scratchpad
+. Pertag
+. Gaps
+. Center-Terminal
+. Tagshift
+. en-keycodes
