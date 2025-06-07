@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
@@ -144,8 +143,7 @@ struct Client {
 	unsigned int bw;
 	uint32_t tags;
 	int isfloating, isurgent, isfullscreen;
-	bool centered;
-	int isterm, noswallow;
+		int isterm, noswallow;
 	uint32_t resize; /* configure serial of a pending resize */
 	struct wl_list link_temp;
 	pid_t pid;
@@ -359,7 +357,6 @@ static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static Client *termforwin(Client *c);
 static void tile(Monitor *m);
-static void togglecenter(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void togglegaps(const Arg *arg);
@@ -441,8 +438,6 @@ static Monitor *selmon;
 
 static struct wl_list scratchpad_clients;
 static int scratchpad_visible = 1;
-
-static bool center;
 
 static const struct xkb_rule_names en_rules = {.layout = "us"};
 static struct xkb_context *en_context;
@@ -534,8 +529,6 @@ applyrules(Client *c)
 		if (p)
 			swallow(c, p);
 	}
-	if (!strcasecmp(appid, termcmd[0]))
-		c->centered = true;
 	setmon(c, mon, newtags);
 }
 
@@ -2941,11 +2934,6 @@ tile(Monitor *m)
 		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
 			continue;
 		if (i < m->nmaster) {
-			if (n == 1 && center && c->centered) {
-				resize(c, (struct wlr_box){.x = m->w.width / 4, .y = m->w.y,
-						.width = m->w.width / 2, .height = m->w.height - 2 * c->bw}, 0);
-				return;
-			}
 			r = MIN(n, m->nmaster) - i;
 			h = (m->w.height - my - gappx*e - gappx*e * (r - 1)) / r;
 			resize(c, (struct wlr_box){.x = m->w.x + gappx*e, .y = m->w.y + my,
@@ -2960,13 +2948,6 @@ tile(Monitor *m)
 		}
 		i++;
 	}
-}
-
-void
-togglecenter(const Arg *arg)
-{
-	center = !center;
-	tile(selmon);
 }
 
 void
